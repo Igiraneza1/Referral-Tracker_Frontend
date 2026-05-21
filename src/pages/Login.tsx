@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-// import api from '../services/api';
+import api from '../services/api';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import Alert from '../components/Alert';
@@ -18,7 +18,6 @@ export default function Login() {
     e.preventDefault();
     setError('');
 
-    // basic validation
     if (!username || !password) {
       setError('Please enter your username and password');
       return;
@@ -34,7 +33,6 @@ export default function Login() {
 
       const { token, user } = response.data;
 
-      // save to context and localStorage
       login(token, user);
 
     } catch (err: any) {
@@ -50,7 +48,6 @@ export default function Login() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
 
-        {/* logo */}
         <div className="flex flex-col items-center mb-8">
           <div className="bg-[#1a1a4e] p-4 rounded-2xl mb-4">
             <Activity size={32} className="text-[#6c63ff]" />
@@ -59,7 +56,6 @@ export default function Login() {
           <p className="text-sm text-gray-500 mt-1">Healthcare Information System</p>
         </div>
 
-        {/* card */}
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
 
           <h2 className="text-lg font-semibold text-[#1a1a4e] mb-1">
@@ -69,14 +65,12 @@ export default function Login() {
             Sign in to your account to continue
           </p>
 
-          {/* error alert */}
           {error && (
             <div className="mb-4">
               <Alert type="error" message={error} dismissible={false} />
             </div>
           )}
 
-          {/* form */}
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
 
             <Input
@@ -112,7 +106,6 @@ export default function Login() {
 
         </div>
 
-        {/* footer note */}
         <p className="text-center text-xs text-gray-400 mt-6">
           Don't have an account? Contact your administrator.
         </p>
