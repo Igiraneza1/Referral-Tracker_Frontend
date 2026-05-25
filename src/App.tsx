@@ -7,6 +7,17 @@ import ReferralList from './pages/ReferralList';
 import ReferralDetail from './pages/ReferralDetail';
 import NewReferral from './pages/NewReferral';
 import ProtectedRoute from './context/ProtectedRoute';
+import UserManagement from './pages/UserManagement';
+
+// add this route — only ADMIN and DEVELOPER can access
+<Route
+  path="/users"
+  element={
+    <ProtectedRoute allowedRoles={['ADMIN', 'DEVELOPER', 'FACILITY_ADMIN']}>
+      <UserManagement />
+    </ProtectedRoute>
+  }
+/>
 
 export default function App() {
   return (
@@ -63,6 +74,15 @@ export default function App() {
           />
 
           <Route path="*" element={<Navigate to="/login" replace />} />
+
+          <Route
+            path="/users"
+            element={
+              <ProtectedRoute allowedRoles={['ADMIN', 'DEVELOPER', 'FACILITY_ADMIN']}>
+                <UserManagement />
+              </ProtectedRoute>
+            }
+          />
 
         </Routes>
       </AuthProvider>

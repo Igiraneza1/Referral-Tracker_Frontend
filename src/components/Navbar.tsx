@@ -28,7 +28,6 @@ export default function Navbar({ fullName, role, facility }: NavbarProps) {
     <nav className="bg-[#1a1a4e] text-white px-6 py-4 shadow-lg">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
 
-        {/* left — logo */}
         <div
           className="flex items-center gap-2 cursor-pointer"
           onClick={() => navigate('/dashboard')}
@@ -42,7 +41,6 @@ export default function Navbar({ fullName, role, facility }: NavbarProps) {
           </div>
         </div>
 
-        {/* center — navigation links */}
         <div className="hidden md:flex items-center gap-6 text-sm">
           <button
             onClick={() => navigate('/dashboard')}
@@ -56,12 +54,19 @@ export default function Navbar({ fullName, role, facility }: NavbarProps) {
           >
             Referrals
           </button>
+
+          {(role === 'ADMIN' || role === 'DEVELOPER' || role === 'FACILITY_ADMIN') && (
+            <button
+              onClick={() => navigate('/users')}
+              className="text-gray-300 hover:text-white transition-colors duration-200"
+            >
+              Users
+            </button>
+          )}
         </div>
 
-        {/* right — user info + logout */}
         <div className="flex items-center gap-4">
 
-          {/* user info */}
           <div className="hidden md:flex flex-col items-end">
             <div className="flex items-center gap-2">
               <User size={14} className="text-gray-400" />
@@ -82,7 +87,6 @@ export default function Navbar({ fullName, role, facility }: NavbarProps) {
             </div>
           </div>
 
-          {/* logout button */}
           <button
             onClick={handleLogout}
             className="

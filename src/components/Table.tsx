@@ -1,6 +1,6 @@
 import Badge from './Badge';
 import { Eye } from 'lucide-react';
-import { Referral } from '../types';
+import type { Referral } from '../types';
 
 interface TableProps {
   referrals: Referral[];
