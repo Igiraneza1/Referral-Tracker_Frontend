@@ -18,6 +18,9 @@ export default function UserManagement() {
   const [success, setSuccess] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [resetId, setResetId] = useState<number | null>(null);
+  const [newPassword, setNewPassword] = useState('');
+  const [resetting, setResetting] = useState(false);
 
   const [form, setForm] = useState({
     fullName: '',
@@ -116,6 +119,7 @@ export default function UserManagement() {
   const handleDeactivate = async (userId: number, isActive: boolean) => {
     try {
       setError('');
+      setSuccess('');
       await api.patch(`/users/${userId}/status`, {
         isActive: !isActive,
       });
@@ -123,6 +127,26 @@ export default function UserManagement() {
       fetchUsers();
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to update user status');
+    }
+  };
+
+  const handleResetPassword = async (userId: number) => {
+    if (!newPassword || newPassword.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+    try {
+      setResetting(true);
+      setError('');
+      setSuccess('');
+      await api.patch(`/users/${userId}/reset-password`, { newPassword });
+      setSuccess('Password reset successfully');
+      setResetId(null);
+      setNewPassword('');
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to reset password');
+    } finally {
+      setResetting(false);
     }
   };
 
@@ -219,7 +243,6 @@ export default function UserManagement() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
               <div className="flex flex-col gap-1">
                 <label className="text-sm font-medium text-[#1a1a4e]">
                   Role <span className="text-[#6c63ff]">*</span>
@@ -256,15 +279,10 @@ export default function UserManagement() {
                   required
                 />
               )}
-
             </div>
 
             <div className="flex gap-3 pt-2">
-              <Button
-                type="submit"
-                variant="primary"
-                disabled={submitting}
-              >
+              <Button type="submit" variant="primary" disabled={submitting}>
                 {submitting ? 'Creating...' : 'Create User'}
               </Button>
               <Button
@@ -342,25 +360,75 @@ export default function UserManagement() {
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      {u.id !== user?.id && (
+                      <div className="flex flex-col gap-2">
+
+                        {/* deactivate / activate */}
+                        {u.id !== user?.id && (
+                          <button
+                            onClick={() => handleDeactivate(u.id, u.isActive)}
+                            className={`
+                              flex items-center gap-1.5 px-3 py-1.5
+                              text-xs font-medium rounded-lg
+                              border transition-all duration-200
+                              ${u.isActive
+                                ? 'text-red-600 border-red-300 hover:bg-red-600 hover:text-white'
+                                : 'text-green-600 border-green-300 hover:bg-green-600 hover:text-white'
+                              }
+                            `}
+                          >
+                            {u.isActive
+                              ? <><UserX size={14} /> Deactivate</>
+                              : <><UserCheck size={14} /> Activate</>
+                            }
+                          </button>
+                        )}
+
+                        {/* reset password */}
                         <button
-                          onClick={() => handleDeactivate(u.id, u.isActive)}
-                          className={`
+                          onClick={() => {
+                            setResetId(resetId === u.id ? null : u.id);
+                            setNewPassword('');
+                          }}
+                          className="
                             flex items-center gap-1.5 px-3 py-1.5
                             text-xs font-medium rounded-lg
-                            border transition-all duration-200
-                            ${u.isActive
-                              ? 'text-red-600 border-red-300 hover:bg-red-600 hover:text-white'
-                              : 'text-green-600 border-green-300 hover:bg-green-600 hover:text-white'
-                            }
-                          `}
+                            border border-[#6c63ff] text-[#6c63ff]
+                            hover:bg-[#6c63ff] hover:text-white
+                            transition-all duration-200
+                          "
                         >
-                          {u.isActive
-                            ? <><UserX size={14} /> Deactivate</>
-                            : <><UserCheck size={14} /> Activate</>
-                          }
+                          Reset Password
                         </button>
-                      )}
+
+                        {/* inline reset form */}
+                        {resetId === u.id && (
+                          <div className="flex gap-2 mt-1">
+                            <input
+                              type="password"
+                              value={newPassword}
+                              onChange={(e) => setNewPassword(e.target.value)}
+                              placeholder="New password"
+                              className="
+                                px-2 py-1 text-xs border border-gray-300
+                                rounded-lg focus:outline-none focus:ring-1
+                                focus:ring-[#6c63ff] w-28
+                              "
+                            />
+                            <button
+                              onClick={() => handleResetPassword(u.id)}
+                              disabled={resetting}
+                              className="
+                                px-2 py-1 text-xs bg-[#6c63ff] text-white
+                                rounded-lg hover:bg-[#5a52e0]
+                                transition-colors duration-200
+                              "
+                            >
+                              {resetting ? '...' : 'Save'}
+                            </button>
+                          </div>
+                        )}
+
+                      </div>
                     </td>
                   </tr>
                 ))
